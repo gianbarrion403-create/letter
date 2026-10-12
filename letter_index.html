@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Monthsary, Mahal Ko! ❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(ellipse at bottom, #1b0030 0%, #0d001a 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Starry Background Canvas */
+    #stars-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Hearts Canvas */
+    #hearts-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 650px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Envelope / Intro Screen */
+    .intro-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(13, 0, 26, 0.92);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 1.2s ease, visibility 1.2s ease;
+      cursor: pointer;
+    }
+
+    .intro-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 260px;
+      height: 180px;
+      background: #8e24aa;
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(142, 36, 170, 0.4), 0 0 25px rgba(255, 105, 180, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.4s ease;
+      animation: pulseGlow 2s infinite alternate;
+    }
+
+    .envelope-wrapper:hover {
+      transform: scale(1.06);
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 130px solid transparent;
+      border-right: 130px solid transparent;
+      border-top: 100px solid #ab47bc;
+      transform-origin: top;
+      transition: transform 0.6s ease;
+    }
+
+    .heart-seal {
+      width: 55px;
+      height: 55px;
+      background: linear-gradient(135deg, #ff4081, #d500f9);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 26px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 2;
+    }
+
+    .click-prompt {
+      margin-top: 35px;
+      font-size: 1.2rem;
+      letter-spacing: 1.5px;
+      color: #f8bbd0;
+      text-align: center;
+      animation: bounce 1.5s infinite;
+      font-family: 'Dancing Script', cursive;
+      font-weight: 700;
+    }
+
+    /* Letter Card */
+    .letter-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 35px 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.05);
+      opacity: 0;
+      transform: translateY(40px) scale(0.95);
+      transition: opacity 1.2s ease 0.3s, transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .letter-card.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .letter-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.5rem;
+      text-align: center;
+      color: #f48fb1;
+      text-shadow: 0 0 12px rgba(244, 143, 177, 0.6);
+      margin-bottom: 20px;
+    }
+
+    .letter-body {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #f3e5f5;
+      text-align: justify;
+      white-space: pre-line;
+      margin-bottom: 30px;
+    }
+
+    /* ==========================================
+       📺 RETRO TV FRAME & PHOTO SLIDER DESIGN
+       ========================================== */
+    .tv-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      margin: 30px auto 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* TV Antennas */
+    .tv-antenna-box {
+      position: relative;
+      width: 120px;
+      height: 30px;
+      margin-bottom: -6px;
+      z-index: 5;
+    }
+
+    .antenna {
+      position: absolute;
+      bottom: 0;
+      width: 4px;
+      height: 45px;
+      background: linear-gradient(to top, #555, #ccc);
+      border-radius: 2px;
+    }
+
+    .antenna.left {
+      left: 30px;
+      transform: rotate(-28deg);
+      transform-origin: bottom center;
+    }
+
+    .antenna.right {
+      right: 30px;
+      transform: rotate(28deg);
+      transform-origin: bottom center;
+    }
+
+    .antenna-ball {
+      position: absolute;
+      top: -6px;
+      left: -3px;
+      width: 10px;
+      height: 10px;
+      background: #e91e63;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #ff4081;
+    }
+
+    /* Main TV Body Cabinet */
+    .tv-cabinet {
+      width: 100%;
+      background: linear-gradient(145deg, #4a2318, #2a120b);
+      border: 4px solid #1a0a06;
+      border-radius: 28px;
+      padding: 16px 16px 18px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.7), inset 0 0 15px rgba(255, 182, 193, 0.2);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      position: relative;
+    }
+
+    /* TV Screen Container */
+    .tv-screen-bezel {
+      flex: 1;
+      background: #000;
+      border: 6px solid #1a1a1a;
+      border-radius: 22px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 4 / 3;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+    }
+
+    /* Glass Glare Overlay */
+    .tv-screen-bezel::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 40%, transparent 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .tv-slider-track {
+      display: flex;
+      width: 200%;
+      height: 100%;
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .tv-slide {
+      width: 50%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0d001a;
+    }
+
+    .tv-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* TV Side Panel Controls */
+    .tv-controls {
+      width: 45px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tv-knob {
+      width: 28px;
+      height: 28px;
+      background: radial-gradient(circle at 30% 30%, #777, #222);
+      border: 2px solid #111;
+      border-radius: 50%;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.6);
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s;
+    }
+
+    .tv-knob:active {
+      transform: rotate(45deg) scale(0.95);
+    }
+
+    .tv-knob::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 8px;
+      background: #ff4081;
+      border-radius: 2px;
+    }
+
+    .tv-speaker-grille {
+      width: 30px;
+      height: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+
+    .tv-speaker-line {
+      width: 100%;
+      height: 3px;
+      background: #111;
+      border-radius: 2px;
+    }
+
+    /* Navigation Arrows inside TV Screen */
+    .tv-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.45);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 15;
+      backdrop-filter: blur(4px);
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .tv-nav-btn:hover {
+      background: rgba(233, 30, 99, 0.8);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .tv-nav-btn.prev { left: 8px; }
+    .tv-nav-btn.next { right: 8px; }
+
+    /* TV Stand Legs */
+    .tv-legs {
+      display: flex;
+      justify-content: space-between;
+      width: 80%;
+      margin-top: -2px;
+    }
+
+    .tv-leg {
+      width: 12px;
+      height: 18px;
+      background: #1a0a06;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+
+    .tv-leg.left { transform: rotate(15deg); }
+    .tv-leg.right { transform: rotate(-15deg); }
+
+    /* Music Control Button */
+    .music-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .music-control:hover {
+      background: rgba(244, 143, 177, 0.4);
+      transform: scale(1.05);
+    }
+
+    /* Animations */
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 15px rgba(142, 36, 170, 0.4); }
+      100% { box-shadow: 0 0 35px rgba(244, 143, 177, 0.8); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Starry Sky Canvas -->
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- Floating Hearts Canvas -->
+  <canvas id="hearts-canvas"></canvas>
+
+  <!--
+    ====================================================================
+    🎵 YOUR SONG PLACEHOLDER SECTION
+    Replace 'YOUR_SONG_FILE_HERE.mp3' below with your song link or file path!
+    Example: src="my_love_song.mp3" OR src="https://example.com/song.mp3"
+    ====================================================================
+  -->
+  <audio id="bg-music" loop preload="auto">
+    <source src="Gian - babyq - 1791780585396 2026-10-12 12_49.m4a" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- Music Toggle Floating Button -->
+  <button class="music-control" id="music-toggle">
+    <span id="music-icon">🎵</span>
+    <span id="music-text">Music: On</span>
+  </button>
+
+  <!-- Intro Screen / Interactive Envelope -->
+  <div class="intro-screen" id="intro-screen">
+    <div class="envelope-wrapper">
+      <div class="envelope-flap"></div>
+      <div class="heart-seal">❤️</div>
+    </div>
+    <div class="click-prompt">Tap anywhere to open your letter ✨</div>
+  </div>
+
+  <!-- Main Letter Content -->
+  <div class="container">
+    <div class="letter-card" id="letter-card">
+      <h1 class="letter-title">Happy Monthsary, Mahal Ko!</h1>
+      
+      <div class="letter-body">
+Hi love! Happy, happy monthsary, mahal ko. I love you so much! Super happy ako sa ikatlo nating monthsary. Nagsisimula pa lang tayo pero alam ko na ikaw na talaga. Tayo na talaga ang pang-habambuhay. Sana palagi tayong maging malakas para ipaglaban ang relasyon natin sa mga darating na problema. Ang pagmamahal ko sa 'yo ay superb! Palagi kong pinipili ikaw at tayo araw-araw at sa kahit anong sitwasyon.
+
+Ikaw na lang ang meron ako, mahal, at gusto kong malaman mo na ako ang kakampi mo sa lahat. Ako ang lifetime partner mo, mahal ko, kaya malaya kang maging kung sino ka sa akin. Kahit na minsan ay may mga pag-aaway tayo at hindi pagkakaunawaan, nagiging lesson 'yon para mas maging malakas at mas matibay tayo. Mahal na mahal kita, love love ko :) I love you so much! Super nagpapasalamat ako sa Panginoon kasi ikaw ang pinadala N'yang anghel sa 'kin :) Mahal na mahal na mahal kita, mwaaaa!
+      </div>
+
+      <!-- 📺 RETRO TV PHOTO DISPLAY FRAME -->
+      <div class="tv-wrapper" id="tv-wrapper">
+        <!-- TV Antennas -->
+        <div class="tv-antenna-box">
+          <div class="antenna left"><div class="antenna-ball"></div></div>
+          <div class="antenna right"><div class="antenna-ball"></div></div>
+        </div>
+
+        <!-- TV Cabinet Body -->
+        <div class="tv-cabinet">
+          <!-- TV Screen with Photo Carousel -->
+          <div class="tv-screen-bezel">
+            <button class="tv-nav-btn prev" id="tv-prev-btn">&#10094;</button>
+            <button class="tv-nav-btn next" id="tv-next-btn">&#10095;</button>
+
+            <div class="tv-slider-track" id="tv-slider-track">
+              
+              <!-- 📷 PHOTO 1 PLACEHOLDER SECTION: Replace YOUR_PHOTO_1_HERE.jpg with your photo -->
+              <div class="tv-slide">
+                <img id="img1" src="1.jpg" alt="Our Memory 1">
+              </div>
+              
+              <!-- 📷 PHOTO 2 PLACEHOLDER SECTION: Replace YOUR_PHOTO_2_HERE.jpg with your photo -->
+              <div class="tv-slide">
+                <img id="img2" src="2.jpg" alt="Our Memory 2">
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TV Side Controls -->
+          <div class="tv-controls">
+            <div class="tv-knob" id="tv-knob-1" title="Click to slide photo"></div>
+            <div class="tv-knob" id="tv-knob-2" title="Click to slide photo"></div>
+            <div class="tv-speaker-grille">
+              <div class="tv-speaker-line"></div>
+              <div class="tv-speaker-line"></div>
+              <div class="tv-speaker-line"></div>
+              <div class="tv-speaker-line"></div>
+              <div class="tv-speaker-line"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TV Stand Legs -->
+        <div class="tv-legs">
+          <div class="tv-leg left"></div>
+          <div class="tv-leg right"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // --- STARRY SKY BACKGROUND ---
+    const starsCanvas = document.getElementById('stars-canvas');
+    const starsCtx = starsCanvas.getContext('2d');
+
+    let stars = [];
+    function resizeStarsCanvas() {
+      starsCanvas.width = window.innerWidth;
+      starsCanvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function initStars() {
+      stars = [];
+      const numStars = Math.floor((starsCanvas.width * starsCanvas.height) / 3000);
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * starsCanvas.width,
+          y: Math.random() * starsCanvas.height,
+          radius: Math.random() * 1.8,
+          alpha: Math.random(),
+          speed: 0.005 + Math.random() * 0.015
+        });
+      }
+    }
+
+    function animateStars() {
+      starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+      stars.forEach(star => {
+        star.alpha += star.speed;
+        if (star.alpha > 1 || star.alpha < 0) {
+          star.speed = -star.speed;
+        }
+        starsCtx.beginPath();
+        starsCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        starsCtx.fillStyle = `rgba(255, 230, 255, ${Math.abs(star.alpha)})`;
+        starsCtx.shadowBlur = star.radius * 4;
+        starsCtx.shadowColor = "#f48fb1";
+        starsCtx.fill();
+      });
+      requestAnimationFrame(animateStars);
+    }
+
+    window.addEventListener('resize', resizeStarsCanvas);
+    resizeStarsCanvas();
+    animateStars();
+
+    // --- FLOATING HEARTS EFFECT ---
+    const heartsCanvas = document.getElementById('hearts-canvas');
+    const heartsCtx = heartsCanvas.getContext('2d');
+    let hearts = [];
+
+    function resizeHeartsCanvas() {
+      heartsCanvas.width = window.innerWidth;
+      heartsCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeHeartsCanvas);
+    resizeHeartsCanvas();
+
+    function createHeart() {
+      return {
+        x: Math.random() * heartsCanvas.width,
+        y: heartsCanvas.height + 20,
+        size: 10 + Math.random() * 15,
+        speedY: 1 + Math.random() * 2,
+        speedX: (Math.random() - 0.5) * 1.5,
+        opacity: 1,
+        color: `hsl(${330 + Math.random() * 30}, 100%, 75%)`
+      };
+    }
+
+    function drawHeartShape(ctx, x, y, size) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.bezierCurveTo(x - size / 2, y - size / 2, x - size, y + size / 3, x, y + size);
+      ctx.bezierCurveTo(x + size, y + size / 3, x + size / 2, y - size / 2, x, y);
+      ctx.fill();
+    }
+
+    function animateHearts() {
+      heartsCtx.clearRect(0, 0, heartsCanvas.width, heartsCanvas.height);
+      
+      if (Math.random() < 0.08) {
+        hearts.push(createHeart());
+      }
+
+      hearts.forEach((heart, index) => {
+        heart.y -= heart.speedY;
+        heart.x += heart.speedX;
+        heart.opacity -= 0.003;
+
+        heartsCtx.fillStyle = heart.color;
+        heartsCtx.globalAlpha = Math.max(0, heart.opacity);
+        drawHeartShape(heartsCtx, heart.x, heart.y, heart.size);
+
+        if (heart.opacity <= 0 || heart.y < -20) {
+          hearts.splice(index, 1);
+        }
+      });
+
+      requestAnimationFrame(animateHearts);
+    }
+    animateHearts();
+
+    // --- INTRO & MUSIC CONTROLS ---
+    const introScreen = document.getElementById('intro-screen');
+    const letterCard = document.getElementById('letter-card');
+    const bgMusic = document.getElementById('bg-music');
+    const musicToggle = document.getElementById('music-toggle');
+    const musicIcon = document.getElementById('music-icon');
+    const musicText = document.getElementById('music-text');
+
+    let isPlaying = false;
+
+    introScreen.addEventListener('click', () => {
+      introScreen.classList.add('hidden');
+      letterCard.classList.add('visible');
+      
+      // Auto-play song when opening the letter
+      bgMusic.play().then(() => {
+        isPlaying = true;
+        updateMusicButton();
+      }).catch(err => {
+        console.log("Audio play issue or missing source:", err);
+      });
+    });
+
+    musicToggle.addEventListener('click', () => {
+      if (isPlaying) {
+        bgMusic.pause();
+        isPlaying = false;
+      } else {
+        bgMusic.play().then(() => {
+          isPlaying = true;
+        }).catch(err => console.log(err));
+      }
+      updateMusicButton();
+    });
+
+    function updateMusicButton() {
+      if (isPlaying) {
+        musicIcon.textContent = "🎵";
+        musicText.textContent = "Music: On";
+      } else {
+        musicIcon.textContent = "🔇";
+        musicText.textContent = "Music: Off";
+      }
+    }
+
+      // --- TV PHOTO SLIDER CAROUSEL LOGIC ---
+    const tvSliderTrack = document.getElementById('tv-slider-track');
+    const tvPrevBtn = document.getElementById('tv-prev-btn');
+    const tvNextBtn = document.getElementById('tv-next-btn');
+    const tvKnob1 = document.getElementById('tv-knob-1');
+    const tvKnob2 = document.getElementById('tv-knob-2');
+    const tvWrapper = document.getElementById('tv-wrapper');
+
+    let currentTvSlide = 0;
+
+    function goToTvSlide(index) {
+      currentTvSlide = index;
+      tvSliderTrack.style.transform = `translateX(-${currentTvSlide * 50}%)`;
+    }
+
+    function toggleTvSlide() {
+      goToTvSlide(currentTvSlide === 0 ? 1 : 0);
+    }
+
+    tvNextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleTvSlide();
+    });
+
+    tvPrevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleTvSlide();
+    });
+
+    tvKnob1.addEventListener('click', toggleTvSlide);
+    tvKnob2.addEventListener('click', toggleTvSlide);
+
+    // Clicking anywhere on the TV screen/frame slides to the next photo
+    tvWrapper.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'BUTTON') {
+        toggleTvSlide();
+      }
+    });
+  </script>
+</body>
+</html>
